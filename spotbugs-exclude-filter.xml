@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<FindBugsFilter>
+    <!-- Lombok 생성 코드 제외 -->
+    <Match>
+        <Class name="~.*\..*Builder"/>
+        <Bug pattern="UWF_UNWRITTEN_FIELD"/>
+    </Match>
+    <!-- JPA 엔티티 기본 생성자 (protected) SpotBugs 경고 제외 -->
+    <Match>
+        <Class name="~allmart\.authservice\.domain\..*"/>
+        <Bug pattern="EQ_DOESNT_OVERRIDE_EQUALS"/>
+    </Match>
+    <!-- Spring Security 설정 클래스 제외 -->
+    <Match>
+        <Class name="~allmart\.authservice\.config\..*"/>
+        <Bug pattern="THROWS_METHOD_THROWS_CLAUSE_BASIC_EXCEPTION"/>
+    </Match>
+</FindBugsFilter>
