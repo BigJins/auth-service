@@ -1,5 +1,0 @@
-# 운영 프로파일 — JAR에 번들되는 최소 설정
-# DB, JPA, Kakao OAuth2 설정은 config-server의 auth-service-prod.yml 에서 주입
-spring:
-  config:
-    import: "configserver:${CONFIG_SERVER_URI:http://config-server:8888}"
