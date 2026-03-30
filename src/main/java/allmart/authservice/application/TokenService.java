@@ -2,7 +2,6 @@ package allmart.authservice.application;
 
 import allmart.authservice.application.provided.TokenRefresher;
 import allmart.authservice.application.required.RefreshTokenStore;
-import allmart.authservice.config.JwtProperties;
 import allmart.authservice.domain.token.AuthToken;
 import allmart.authservice.domain.token.JwtProvider;
 import lombok.RequiredArgsConstructor;
@@ -13,7 +12,6 @@ import org.springframework.stereotype.Service;
 public class TokenService implements TokenRefresher {
 
     private final JwtProvider jwtProvider;
-    private final JwtProperties jwtProperties;
     private final RefreshTokenStore refreshTokenStore;
 
     @Override

@@ -1,12 +1,11 @@
 package allmart.authservice.application;
 
-import allmart.authservice.application.provided.MemberAuthenticator;
-import allmart.authservice.application.provided.MemberRegistrar;
-import allmart.authservice.application.required.MemberRepository;
+import allmart.authservice.application.provided.CustomerAuthenticator;
+import allmart.authservice.application.provided.CustomerRegistrar;
+import allmart.authservice.application.required.CustomerRepository;
 import allmart.authservice.application.required.RefreshTokenStore;
 import allmart.authservice.config.JwtProperties;
-import allmart.authservice.domain.member.Member;
-import allmart.authservice.domain.member.MemberRole;
+import allmart.authservice.domain.customer.Customer;
 import allmart.authservice.domain.token.AuthToken;
 import allmart.authservice.domain.token.JwtProvider;
 import lombok.RequiredArgsConstructor;
@@ -16,39 +15,35 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
-public class MemberAuthService implements MemberRegistrar, MemberAuthenticator {
+public class CustomerAuthService implements CustomerRegistrar, CustomerAuthenticator {
 
-    private final MemberRepository memberRepository;
+    private final CustomerRepository customerRepository;
     private final RefreshTokenStore refreshTokenStore;
     private final JwtProvider jwtProvider;
     private final JwtProperties jwtProperties;
     private final PasswordEncoder passwordEncoder;
 
+    /** 판매자(마트 관리자)가 소비자 계정을 생성 */
     @Override
     @Transactional
-    public AuthToken register(String email, String rawPassword, String martName) {
-        if (memberRepository.existsByEmail(email)) {
+    public void register(String email, String rawPassword, String name) {
+        if (customerRepository.existsByEmail(email)) {
             throw new IllegalStateException("이미 가입된 이메일입니다: " + email);
         }
-        Member member = Member.create(email, passwordEncoder.encode(rawPassword), martName, MemberRole.MANAGER);
-        memberRepository.save(member);
-        return issueAndStore(email, "MEMBER");
+        Customer customer = Customer.register(email, passwordEncoder.encode(rawPassword), name);
+        customerRepository.save(customer);
     }
 
     @Override
     @Transactional(readOnly = true)
     public AuthToken login(String email, String rawPassword) {
-        Member member = memberRepository.findByEmail(email)
+        Customer customer = customerRepository.findByEmail(email)
                 .orElseThrow(() -> new IllegalArgumentException("이메일 또는 비밀번호가 올바르지 않습니다."));
-        if (!passwordEncoder.matches(rawPassword, member.getEncodedPassword())) {
+        if (!passwordEncoder.matches(rawPassword, customer.getEncodedPassword())) {
             throw new IllegalArgumentException("이메일 또는 비밀번호가 올바르지 않습니다.");
         }
-        return issueAndStore(email, "MEMBER");
-    }
-
-    private AuthToken issueAndStore(String subject, String type) {
-        AuthToken token = jwtProvider.issue(subject, type);
-        refreshTokenStore.save(subject, token.refreshToken(), jwtProperties.refreshTokenExpiry());
+        AuthToken token = jwtProvider.issue(email, "CUSTOMER", customer.getCustomerId());
+        refreshTokenStore.save(email, token.refreshToken(), jwtProperties.refreshTokenExpiry());
         return token;
     }
 }

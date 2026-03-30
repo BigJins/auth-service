@@ -10,26 +10,32 @@ import static org.assertj.core.api.Assertions.*;
 class CustomerTest {
 
     @Test
-    @DisplayName("카카오 ID로 고객을 생성할 수 있다")
-    void create_kakao_customer() {
-        Customer customer = Customer.ofKakao("12345678", "홍길동", "hong@kakao.com");
-        assertThat(customer.getKakaoId()).isEqualTo("12345678");
-        assertThat(customer.getNickname()).isEqualTo("홍길동");
-        assertThat(customer.getEmail()).isEqualTo("hong@kakao.com");
-        assertThat(customer.getLoginType()).isEqualTo(LoginType.KAKAO);
+    @DisplayName("이메일로 소비자 계정을 생성할 수 있다")
+    void register_customer_by_email() {
+        Customer customer = Customer.register("hong@allmart.com", "encodedPw", "홍길동");
+        assertThat(customer.getEmail()).isEqualTo("hong@allmart.com");
+        assertThat(customer.getName()).isEqualTo("홍길동");
+        assertThat(customer.getLoginType()).isEqualTo(LoginType.EMAIL);
     }
 
     @Test
-    @DisplayName("이메일이 null이어도 고객을 생성할 수 있다 (동의 안 한 경우)")
-    void create_kakao_customer_without_email() {
-        Customer customer = Customer.ofKakao("12345678", "홍길동", null);
-        assertThat(customer.getEmail()).isNull();
+    @DisplayName("이메일이 null이면 예외가 발생한다")
+    void register_null_email_throws() {
+        assertThatThrownBy(() -> Customer.register(null, "encodedPw", "홍길동"))
+                .isInstanceOf(NullPointerException.class);
     }
 
     @Test
-    @DisplayName("카카오 ID가 null이면 예외가 발생한다")
-    void create_kakao_customer_null_id_throws() {
-        assertThatThrownBy(() -> Customer.ofKakao(null, "홍길동", null))
+    @DisplayName("이메일이 빈 문자열이면 예외가 발생한다")
+    void register_blank_email_throws() {
+        assertThatThrownBy(() -> Customer.register("", "encodedPw", "홍길동"))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @Test
+    @DisplayName("이름이 null이면 예외가 발생한다")
+    void register_null_name_throws() {
+        assertThatThrownBy(() -> Customer.register("hong@allmart.com", "encodedPw", null))
                 .isInstanceOf(NullPointerException.class);
     }
 }

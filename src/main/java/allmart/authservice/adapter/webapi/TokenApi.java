@@ -19,7 +19,6 @@ public class TokenApi {
     }
 
     @PostMapping("/auth/logout")
-    @ResponseBody
     public void logout(@RequestHeader("Authorization") String bearerToken) {
         String token = bearerToken.startsWith("Bearer ") ? bearerToken.substring(7) : bearerToken;
         tokenService.logout(token);

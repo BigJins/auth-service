@@ -3,23 +3,34 @@ package allmart.authservice.domain;
 import allmart.authservice.config.JwtProperties;
 import allmart.authservice.domain.token.AuthToken;
 import allmart.authservice.domain.token.JwtProvider;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+
+import java.security.KeyPair;
+import java.security.KeyPairGenerator;
+import java.security.NoSuchAlgorithmException;
 
 import static org.assertj.core.api.Assertions.*;
 
 class JwtProviderTest {
 
+    // RSA 키 생성은 비용이 크므로 테스트 클래스당 1회만 수행
+    private static KeyPair keyPair;
     private JwtProvider jwtProvider;
+
+    @BeforeAll
+    static void generateKeyPair() throws NoSuchAlgorithmException {
+        KeyPairGenerator gen = KeyPairGenerator.getInstance("RSA");
+        gen.initialize(2048);
+        keyPair = gen.generateKeyPair();
+    }
 
     @BeforeEach
     void setUp() {
-        JwtProperties props = new JwtProperties();
-        props.setSecret("test-secret-key-must-be-at-least-256-bits-long-for-hmac-sha256-algorithm");
-        props.setAccessTokenExpiry(3600000L);
-        props.setRefreshTokenExpiry(86400000L);
-        jwtProvider = new JwtProvider(props);
+        JwtProperties props = new JwtProperties(3600000L, 86400000L);
+        jwtProvider = new JwtProvider(props, keyPair);
     }
 
     @Test
@@ -48,18 +59,14 @@ class JwtProviderTest {
     @DisplayName("위조된 토큰은 isValid가 false를 반환한다")
     void tampered_token_is_invalid() {
         String token = jwtProvider.generateAccessToken("test@mart.com", "MEMBER");
-        String tampered = token + "tampered";
-        assertThat(jwtProvider.isValid(tampered)).isFalse();
+        assertThat(jwtProvider.isValid(token + "tampered")).isFalse();
     }
 
     @Test
     @DisplayName("만료된 토큰은 isValid가 false를 반환한다")
     void expired_token_is_invalid() throws InterruptedException {
-        JwtProperties shortProps = new JwtProperties();
-        shortProps.setSecret("test-secret-key-must-be-at-least-256-bits-long-for-hmac-sha256-algorithm");
-        shortProps.setAccessTokenExpiry(1L); // 1ms — 즉시 만료
-        shortProps.setRefreshTokenExpiry(86400000L);
-        JwtProvider shortProvider = new JwtProvider(shortProps);
+        JwtProperties shortProps = new JwtProperties(1L, 86400000L); // 1ms — 즉시 만료
+        JwtProvider shortProvider = new JwtProvider(shortProps, keyPair);
 
         String token = shortProvider.generateAccessToken("test@mart.com", "MEMBER");
         Thread.sleep(10);
