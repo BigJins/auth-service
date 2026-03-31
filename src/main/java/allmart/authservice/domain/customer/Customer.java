@@ -1,5 +1,6 @@
 package allmart.authservice.domain.customer;
 
+import allmart.authservice.config.SnowflakeGenerated;
 import allmart.authservice.domain.AbstractEntity;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -12,7 +13,7 @@ import java.util.Objects;
 public class Customer extends AbstractEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @SnowflakeGenerated
     private Long customerId;
 
     @Column(nullable = false, unique = true)
