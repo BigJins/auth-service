@@ -1,5 +1,6 @@
 package allmart.authservice.domain.member;
 
+import allmart.authservice.config.SnowflakeGenerated;
 import allmart.authservice.domain.AbstractEntity;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -11,7 +12,12 @@ import java.util.Objects;
 @Getter
 public class Member extends AbstractEntity {
 
+    /** 판매자 고유 ID — martId로도 사용 (mart-service 도입 전까지) */
     @Id
+    @SnowflakeGenerated
+    private Long memberId;
+
+    @Column(nullable = false, unique = true, updatable = false)
     private String email;
 
     @Column(nullable = false)
@@ -39,5 +45,6 @@ public class Member extends AbstractEntity {
         if (martName == null || martName.isBlank()) throw new IllegalArgumentException("마트명은 필수입니다.");
         Objects.requireNonNull(role, "권한은 필수입니다.");
         return new Member(email, encodedPassword, martName, role);
+        // memberId는 @SnowflakeGenerated가 persist 시 자동 생성
     }
 }
