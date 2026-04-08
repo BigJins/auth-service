@@ -10,6 +10,15 @@
         <Class name="~allmart\.authservice\.domain\..*"/>
         <Bug pattern="EQ_DOESNT_OVERRIDE_EQUALS"/>
     </Match>
+    <!-- JPA 관계 및 필드 매핑이 orm.xml로 이동 — 어노테이션 없는 JPA 관계/필드 오탐 제외 -->
+    <Match>
+        <Class name="~allmart\.authservice\.domain\..*"/>
+        <Bug pattern="EI_EXPOSE_REP2"/>
+    </Match>
+    <Match>
+        <Class name="~allmart\.authservice\.domain\..*"/>
+        <Bug pattern="UWF_UNWRITTEN_FIELD"/>
+    </Match>
     <!-- Spring Security 설정 클래스 제외 -->
     <Match>
         <Class name="~allmart\.authservice\.config\..*"/>

@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<entity-mappings
+        xmlns="https://jakarta.ee/xml/ns/persistence/orm"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="https://jakarta.ee/xml/ns/persistence/orm
+                            https://jakarta.ee/xml/ns/persistence/orm/orm_3_1.xsd"
+        version="3.1">
+
+    <entity class="allmart.authservice.domain.customer.Customer" access="FIELD">
+        <table name="tbl_customer"/>
+        <attributes>
+            <basic name="email">
+                <column name="email" nullable="false" unique="true"/>
+            </basic>
+            <basic name="encodedPassword">
+                <column name="encoded_password" nullable="false"/>
+            </basic>
+            <basic name="name">
+                <column name="name" nullable="false"/>
+            </basic>
+            <basic name="loginType">
+                <column name="login_type" nullable="false"/>
+                <enumerated>STRING</enumerated>
+            </basic>
+        </attributes>
+    </entity>
+
+    <entity class="allmart.authservice.domain.customer.SavedAddress" access="FIELD">
+        <table name="saved_address"/>
+        <attributes>
+            <many-to-one name="customer" fetch="LAZY" optional="false">
+                <join-column name="customer_id" nullable="false" updatable="false"/>
+            </many-to-one>
+            <basic name="zipCode">
+                <column name="zip_code" length="10"/>
+            </basic>
+            <basic name="roadAddress">
+                <column name="road_address" length="200"/>
+            </basic>
+            <basic name="detailAddress">
+                <column name="detail_address" length="200"/>
+            </basic>
+            <basic name="label">
+                <column name="label" length="30"/>
+            </basic>
+            <basic name="isDefault">
+                <column name="is_default" nullable="false"/>
+            </basic>
+        </attributes>
+    </entity>
+
+    <entity class="allmart.authservice.domain.member.Member" access="FIELD">
+        <table name="tbl_member"/>
+        <attributes>
+            <basic name="email">
+                <column name="email" nullable="false" unique="true" updatable="false"/>
+            </basic>
+            <basic name="encodedPassword">
+                <column name="encoded_password" nullable="false"/>
+            </basic>
+            <basic name="martName">
+                <column name="mart_name" nullable="false"/>
+            </basic>
+            <basic name="role">
+                <column name="role" nullable="false"/>
+                <enumerated>STRING</enumerated>
+            </basic>
+        </attributes>
+    </entity>
+
+</entity-mappings>
