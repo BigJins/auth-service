@@ -28,9 +28,6 @@
     <entity class="allmart.authservice.domain.customer.SavedAddress">
         <table name="saved_address"/>
         <attributes>
-            <many-to-one name="customer" fetch="LAZY" optional="false">
-                <join-column name="customer_id" nullable="false" updatable="false"/>
-            </many-to-one>
             <basic name="zipCode">
                 <column name="zip_code" length="10"/>
             </basic>
