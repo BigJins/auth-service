@@ -48,6 +48,9 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-opentelemetry")
     implementation("com.github.loki4j:loki-logback-appender:1.5.2")
 
+    // .env 파일 자동 로딩 (로컬 개발용 API 키 주입)
+    implementation("me.paulschwarz:spring-dotenv:4.0.0")
+
     compileOnly("org.projectlombok:lombok")
     developmentOnly("org.springframework.boot:spring-boot-devtools")
     annotationProcessor("org.projectlombok:lombok")
