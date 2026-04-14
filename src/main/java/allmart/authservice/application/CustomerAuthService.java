@@ -4,8 +4,10 @@ import allmart.authservice.application.provided.CustomerAuthenticator;
 import allmart.authservice.application.provided.CustomerRegistrar;
 import allmart.authservice.application.required.CustomerRepository;
 import allmart.authservice.application.required.RefreshTokenStore;
+import allmart.authservice.application.required.SavedAddressRepository;
 import allmart.authservice.config.JwtProperties;
 import allmart.authservice.domain.customer.Customer;
+import allmart.authservice.domain.customer.SavedAddress;
 import allmart.authservice.domain.token.AuthToken;
 import allmart.authservice.domain.token.JwtProvider;
 import lombok.RequiredArgsConstructor;
@@ -20,15 +22,17 @@ import org.springframework.transaction.annotation.Transactional;
 public class CustomerAuthService implements CustomerRegistrar, CustomerAuthenticator {
 
     private final CustomerRepository customerRepository;
+    private final SavedAddressRepository savedAddressRepository;
     private final RefreshTokenStore refreshTokenStore;
     private final JwtProvider jwtProvider;
     private final JwtProperties jwtProperties;
     private final PasswordEncoder passwordEncoder;
 
-    /** 판매자(마트 관리자)가 소비자 계정을 생성 */
+    /** 판매자(마트 관리자)가 소비자 계정을 생성. 주소가 있으면 기본 배송지로 함께 저장. */
     @Override
     @Transactional
-    public void register(String email, String rawPassword, String name) {
+    public void register(String email, String rawPassword, String name,
+                         String zipCode, String roadAddress, String detailAddress) {
         if (customerRepository.existsByEmail(email)) {
             log.warn("소비자 계정 생성 실패 - 이미 가입된 이메일: {}", email);
             throw new IllegalStateException("이미 가입된 이메일입니다: " + email);
@@ -36,6 +40,17 @@ public class CustomerAuthService implements CustomerRegistrar, CustomerAuthentic
         Customer customer = Customer.register(email, passwordEncoder.encode(rawPassword), name);
         Customer saved = customerRepository.save(customer);
         log.info("소비자 계정 생성 완료: customerId={}, email={}, name={}", saved.getCustomerId(), email, name);
+
+        if (roadAddress != null && !roadAddress.isBlank()) {
+            SavedAddress address = SavedAddress.create(saved,
+                    zipCode != null ? zipCode : "",
+                    roadAddress,
+                    detailAddress != null ? detailAddress : "",
+                    null,
+                    true);
+            savedAddressRepository.save(address);
+            log.info("기본 배송지 저장 완료: customerId={}, address={}", saved.getCustomerId(), roadAddress);
+        }
     }
 
     @Override

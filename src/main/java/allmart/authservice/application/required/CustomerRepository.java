@@ -8,6 +8,7 @@ import java.util.Optional;
 
 public interface CustomerRepository extends Repository<Customer, Long> {
     Customer save(Customer customer);
+    Optional<Customer> findById(Long customerId);
     Optional<Customer> findByEmail(String email);
     boolean existsByEmail(String email);
     List<Customer> findAll();

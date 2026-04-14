@@ -36,7 +36,8 @@ public class CustomerAuthApi {
         if (!"MEMBER".equals(userType)) {
             throw new IllegalStateException("판매자 권한이 필요합니다.");
         }
-        customerRegistrar.register(request.email(), request.password(), request.name());
+        customerRegistrar.register(request.email(), request.password(), request.name(),
+                request.zipCode(), request.roadAddress(), request.detailAddress());
         return Map.of("message", "소비자 계정이 등록되었습니다.", "email", request.email());
     }
 

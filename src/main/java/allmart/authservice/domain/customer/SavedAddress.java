@@ -43,18 +43,18 @@ public class SavedAddress extends AbstractEntity {
                                       String detailAddress, String label, boolean isDefault) {
         SavedAddress address = new SavedAddress();
         address.customer = customer;
-        address.zipCode = zipCode.trim();
+        address.zipCode = zipCode != null ? zipCode.trim() : "";
         address.roadAddress = roadAddress.trim();
-        address.detailAddress = detailAddress.trim();
+        address.detailAddress = detailAddress != null ? detailAddress.trim() : "";
         address.label = (label != null && !label.isBlank()) ? label.trim() : null;
         address.isDefault = isDefault;
         return address;
     }
 
     public void update(String zipCode, String roadAddress, String detailAddress, String label, boolean isDefault) {
-        this.zipCode = zipCode.trim();
+        this.zipCode = zipCode != null ? zipCode.trim() : "";
         this.roadAddress = roadAddress.trim();
-        this.detailAddress = detailAddress.trim();
+        this.detailAddress = detailAddress != null ? detailAddress.trim() : "";
         this.label = (label != null && !label.isBlank()) ? label.trim() : null;
         this.isDefault = isDefault;
     }
